@@ -1,23 +1,19 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0.2)
 project(Sapphire)
 
-include_directories("../../external/")
-# todo: fix standalone build
-if(UNIX)
-  include_directories("/usr/include/mysql/")
-  
+include_directories( "../../external/" )
+
+file( GLOB UTILS_PUBLIC_INCLUDE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*" )
+file( GLOB UTILS_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*" )
+
+set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+
+add_library( xivdat ${UTILS_PUBLIC_INCLUDE_FILES} ${UTILS_SOURCE_FILES} )
+if (UNIX)
+    target_link_libraries( xivdat PUBLIC dl )
+    target_link_libraries( xivdat PUBLIC z )
 else()
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../../external/MySQL/")
-
-  # ignore unchecked iterators warnings from msvc
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+    target_link_libraries( xivdat PUBLIC zlib1 )
 endif()
-
-message(status "** CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-
-file(GLOB UTILS_PUBLIC_INCLUDE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*")
-file(GLOB UTILS_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*")
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_library(xivdat ${UTILS_PUBLIC_INCLUDE_FILES} ${UTILS_SOURCE_FILES})
+target_include_directories( xivdat PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} )
+cotire( xivdat )

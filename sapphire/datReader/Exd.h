@@ -27,6 +27,12 @@ using Field = boost::variant<
     uint32_t,
     float,
     uint64_t >;
+  
+struct ExdCacheEntry
+{
+   std::shared_ptr<dat::File> file;
+   uint32_t offset;
+};
 
 // Data for a given language
 class Exd
@@ -39,7 +45,7 @@ public:
     ~Exd();
 
     // Get a row by its id
-    const std::vector<Field>& get_row(uint32_t id);
+    const std::vector<Field> get_row(uint32_t id);
 
     // Get all rows
     const std::map<uint32_t, std::vector<Field>>& get_rows();
@@ -52,6 +58,7 @@ protected:
     std::map<uint32_t, std::vector<Field>> _data;
     std::vector<std::shared_ptr<dat::File>> _files;
     std::shared_ptr<Exh> _exh;
+    std::map< uint32_t, ExdCacheEntry > _idCache;
 };
 
 }
